@@ -46,10 +46,10 @@
         /* 아기 토끼 */
         .baby-rabbit {
             position: absolute;
-            left: -5%;
-            bottom: 3%;
-            width: 45%;
-            height: 45%;
+            right: 40%;
+            bottom: -10%;
+            width: 70%;
+            height: 70%;
             z-index: 10;
         }
 
@@ -71,10 +71,10 @@
         /* 엄마 토끼 */
         .mom-rabbit {
             position: absolute;
-            right: -8%;
-            bottom: 3%;
-            width: 70%;
-            height: 70%;
+            right: -20%;
+            bottom: -10%;
+            width: 95%;
+            height: 95%;
             z-index: 10;
         }
 
@@ -109,7 +109,7 @@
         }
 
         .complete-text {
-            font-size: clamp(24px, 6.5vw, 32px);
+            font-size: clamp(28px, 7.5vw, 38px);
             font-weight: 900;
             color: #FF6B35;
             text-align: center;
@@ -117,7 +117,7 @@
         }
 
         .complete-sub {
-            font-size: clamp(18px, 5vw, 24px);
+            font-size: clamp(22px, 6vw, 30px);
             font-weight: 900;
             color: #3D2817;
             text-align: center;
@@ -184,6 +184,33 @@
                 max-width: 480px;
                 margin: 0 auto;
             }
+
+            .text-container {
+                top: 9%;
+            }
+
+            .complete-text {
+                font-size: 32px;
+            }
+
+            .complete-sub {
+                font-size: 24px;
+                white-space: nowrap;
+            }
+
+            .baby-rabbit {
+                right: 50%;
+                bottom: -11%;
+                width: 55%;
+                height: 55%;
+            }
+
+            .mom-rabbit {
+                right: -12%;
+                bottom: -15%;
+                width: 90%;
+                height: 90%;
+            }
         }
 
         /* 큰 모바일 */
@@ -199,21 +226,21 @@
 </head>
 <body>
     <div class="container" id="completeContainer" style="cursor: pointer;">
-        <img class="background" src="assets/complete/complete_background_with_text_box_2.png" alt="배경">
+        <img class="background" src="assets/complete/NEW_kitchen_background.png" alt="배경">
 
         <!-- 축하 효과 -->
         <div class="confetti" id="confetti"></div>
 
         <!-- 아기 토끼 -->
         <div class="baby-rabbit">
-            <img id="babyFrame0" class="active" src="assets/complete/complete_baby_rabbit_1.png" alt="아기토끼1">
-            <img id="babyFrame1" src="assets/complete/complete_baby_rabbit_2.png" alt="아기토끼2">
+            <img id="babyFrame0" class="active" src="assets/complete/NEW_complete_baby_rabbit_1.png" alt="아기토끼1">
+            <img id="babyFrame1" src="assets/complete/NEW_complete_baby_rabbit_2.png" alt="아기토끼2">
         </div>
 
         <!-- 엄마 토끼 -->
         <div class="mom-rabbit">
-            <img id="momFrame0" class="active" src="assets/complete/complete_mom_with_cake.png" alt="엄마토끼1">
-            <img id="momFrame1" src="assets/complete/complete_mom_with_cake_2.png" alt="엄마토끼2">
+            <img id="momFrame0" class="active" src="assets/complete/NEW_complete_mom_with_cake_1.png" alt="엄마토끼1">
+            <img id="momFrame1" src="assets/complete/NEW_complete_mom_with_cake_2.png" alt="엄마토끼2">
         </div>
 
         <!-- 완료 텍스트 -->
