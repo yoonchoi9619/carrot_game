@@ -30,7 +30,7 @@
             position: relative;
             width: 100%;
             height: 100dvh;
-            height: 100vh; /* fallback */
+            height: 100vh;
             background-color: #FFF8F0;
             overflow: hidden;
             padding-top: env(safe-area-inset-top);
@@ -46,7 +46,7 @@
             object-fit: cover;
         }
 
-        /* 아기 토끼 */
+        /* 아기 토끼 - MB 기본 */
         .baby-rabbit {
             position: absolute;
             right: 40%;
@@ -71,7 +71,7 @@
             opacity: 1;
         }
 
-        /* 엄마 토끼 */
+        /* 엄마 토끼 - MB 기본 */
         .mom-rabbit {
             position: absolute;
             right: -20%;
@@ -96,10 +96,10 @@
             opacity: 1;
         }
 
-        /* 대화 텍스트 - 말풍선 중앙 */
+        /* 대화 텍스트 - MB 기본 */
         .text-container {
             position: absolute;
-            top: 11%;
+            top: 13%;
             bottom: 67%;
             left: 13%;
             right: 13%;
@@ -112,7 +112,7 @@
         }
 
         .complete-text {
-            font-size: clamp(22px, min(7vw, 4.5vh), 38px);
+            font-size: clamp(26px, 8vw, 42px);
             font-weight: 900;
             color: #FF6B35;
             text-align: center;
@@ -120,7 +120,7 @@
         }
 
         .complete-sub {
-            font-size: clamp(18px, min(5.5vw, 3.5vh), 30px);
+            font-size: clamp(20px, 6vw, 32px);
             font-weight: 900;
             color: #3D2817;
             text-align: center;
@@ -171,7 +171,7 @@
         }
 
         .hint-text {
-            font-size: clamp(14px, min(4.5vw, 2.5vh), 18px);
+            font-size: clamp(14px, 4.5vw, 18px);
             color: rgba(61, 40, 23, 0.85);
             text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);
         }
@@ -179,6 +179,24 @@
         @keyframes hintPulse {
             0%, 100% { opacity: 0.5; }
             50% { opacity: 1; }
+        }
+
+        /* 페이지 전환 효과 */
+        .fade-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #FFF8F0;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+        }
+
+        .fade-overlay.active {
+            opacity: 1;
         }
 
         /* PC 대응 */
@@ -189,7 +207,7 @@
             }
 
             .text-container {
-                top: 9%;
+                top: 5%;
             }
 
             .complete-text {
@@ -203,90 +221,40 @@
 
             .baby-rabbit {
                 right: 50%;
-                bottom: -11%;
+                bottom: -13%;
                 width: 55%;
                 height: 55%;
             }
 
             .mom-rabbit {
                 right: -12%;
-                bottom: -15%;
-                width: 90%;
-                height: 90%;
-            }
-        }
-
-        /* 큰 모바일 */
-        @media (min-height: 800px) {
-            .complete-text {
-                font-size: 28px;
-            }
-            .complete-sub {
-                font-size: 20px;
-            }
-        }
-
-        /* 세로로 긴 화면 (20:9 등) */
-        @media (max-aspect-ratio: 9/18) {
-            .text-container {
-                top: 8%;
-                bottom: 72%;
-            }
-            .complete-text {
-                font-size: clamp(18px, min(5.5vw, 3vh), 28px);
-            }
-            .complete-sub {
-                font-size: clamp(14px, min(4.5vw, 2.5vh), 22px);
-            }
-            .baby-rabbit {
-                right: 45%;
-                bottom: 0%;
-                width: 55%;
-                height: 55%;
-            }
-            .mom-rabbit {
-                right: -15%;
-                bottom: 0%;
-                width: 75%;
-                height: 75%;
-            }
-            .hint-container {
-                bottom: 6%;
-            }
-        }
-
-        /* 짧은 화면 (태블릿 등) */
-        @media (min-aspect-ratio: 3/4) {
-            .text-container {
-                top: 12%;
-                bottom: 62%;
-            }
-            .baby-rabbit {
-                bottom: -15%;
-            }
-            .mom-rabbit {
-                bottom: -15%;
+                bottom: -18%;
+                width: 95%;
+                height: 95%;
             }
         }
     </style>
 </head>
 <body>
+    <!-- 페이지 전환 오버레이 -->
+    <div class="fade-overlay" id="fadeOverlay"></div>
+
     <div class="container" id="completeContainer" style="cursor: pointer;">
-        <img class="background" src="assets/complete/NEW_kitchen_background.png" alt="배경">
+        <img class="background" src="assets/complete/LOW_NEW_KITCHEN_BACKGROUND.png" alt="배경">
 
         <!-- 축하 효과 -->
         <div class="confetti" id="confetti"></div>
 
         <!-- 아기 토끼 -->
         <div class="baby-rabbit">
-            <img id="babyFrame0" class="active" src="assets/complete/NEW_complete_baby_rabbit_1.png" alt="아기토끼1">
-            <img id="babyFrame1" src="assets/complete/NEW_complete_baby_rabbit_2.png" alt="아기토끼2">
+            <img id="babyFrame0" class="active" src="assets/complete/LOW_complete_baby_rabbit_1.png" alt="아기토끼1">
+            <img id="babyFrame1" src="assets/complete/LOW_complete_baby_rabbit_2.png" alt="아기토끼2">
         </div>
 
         <!-- 엄마 토끼 -->
         <div class="mom-rabbit">
-            <img id="momFrame0" class="active" src="assets/complete/NEW_complete_mom_with_cake_1.png" alt="엄마토끼1">
-            <img id="momFrame1" src="assets/complete/NEW_complete_mom_with_cake_2.png" alt="엄마토끼2">
+            <img id="momFrame0" class="active" src="assets/complete/low_NEW_complete_mom_with_cake_1.png" alt="엄마토끼1">
+            <img id="momFrame1" src="assets/complete/low_NEW_complete_mom_with_cake_2.png" alt="엄마토끼2">
         </div>
 
         <!-- 완료 텍스트 -->
@@ -304,6 +272,49 @@
     <script>
         let babyFrame = 0;
         let momFrame = 0;
+
+        // 다음 페이지 이미지 프리로딩
+        function preloadImages() {
+            const images = [
+                'assets/ending/LOW_NEW_KITCHEN_BACKGROUND.png',
+                'assets/ending/LOW_ending_happy_rabbits_1.png',
+                'assets/ending/LOW_ending_happy_rabbits_2.png'
+            ];
+            images.forEach(src => {
+                const img = new Image();
+                img.src = src;
+            });
+        }
+
+        // 페이드 전환 후 이동
+        function navigateTo(url) {
+            const overlay = document.getElementById('fadeOverlay');
+            overlay.classList.add('active');
+            setTimeout(() => {
+                location.href = url;
+            }, 300);
+        }
+
+        // 축하 효과음
+        function playCelebrationSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                // 짧은 팡파레 효과
+                [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.frequency.setValueAtTime(freq, audioContext.currentTime + i * 0.1);
+                    gain.gain.setValueAtTime(0.2, audioContext.currentTime + i * 0.1);
+                    gain.gain.linearRampToValueAtTime(0.01, audioContext.currentTime + i * 0.1 + 0.3);
+                    osc.start(audioContext.currentTime + i * 0.1);
+                    osc.stop(audioContext.currentTime + i * 0.1 + 0.3);
+                });
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
 
         // 아기 토끼 애니메이션 (즉시 전환)
         function startBabyAnimation() {
@@ -345,9 +356,15 @@
 
         // 초기화
         window.addEventListener('load', () => {
+            preloadImages();
             startBabyAnimation();
             startMomAnimation();
             createConfetti();
+
+            // 축하 효과음 재생
+            setTimeout(() => {
+                playCelebrationSound();
+            }, 300);
 
             // 3초 후 힌트 텍스트 표시
             setTimeout(() => {
@@ -357,7 +374,7 @@
 
         // 탭/클릭 시 엔딩으로 이동
         document.getElementById('completeContainer').addEventListener('click', () => {
-            location.href = 'ending.html';
+            navigateTo('ending.html');
         });
     </script>
 </body>

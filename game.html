@@ -380,6 +380,24 @@
             50% { transform: translateY(-20px); }
         }
 
+        /* 페이지 전환 효과 */
+        .fade-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #FFF8F0;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+        }
+
+        .fade-overlay.active {
+            opacity: 1;
+        }
+
         /* PC 대응 */
         @media (min-width: 769px) {
             .container {
@@ -422,66 +440,12 @@
                 height: 65%;
             }
         }
-
-        /* 세로로 긴 화면 (20:9 등) */
-        @media (max-aspect-ratio: 9/18) {
-            .progress-container {
-                top: calc(40px + env(safe-area-inset-top));
-            }
-            .back-button {
-                top: calc(40px + env(safe-area-inset-top));
-            }
-            .basket-button {
-                top: 12%;
-                height: 28%;
-            }
-            .basket-number {
-                font-size: clamp(28px, min(9vw, 5vh), 48px);
-            }
-            .question-container {
-                top: 42%;
-            }
-            .question-text {
-                font-size: clamp(28px, min(9vw, 5vh), 48px);
-            }
-            .rabbit-layer {
-                bottom: 5%;
-                height: 55%;
-            }
-            .encourage-text {
-                top: 18%;
-            }
-            .encourage-line {
-                font-size: clamp(18px, min(6vw, 3.5vh), 30px);
-            }
-            .encourage-mom {
-                bottom: 0%;
-                height: 55%;
-            }
-            .retry-button {
-                bottom: 10%;
-                font-size: 16px;
-                padding: 12px 28px;
-            }
-        }
-
-        /* 짧은 화면 (태블릿 등) */
-        @media (min-aspect-ratio: 3/4) {
-            .basket-button {
-                top: 16%;
-                height: 38%;
-            }
-            .question-container {
-                top: 52%;
-            }
-            .rabbit-layer {
-                bottom: -5%;
-                height: 75%;
-            }
-        }
     </style>
 </head>
 <body>
+    <!-- 페이지 전환 오버레이 -->
+    <div class="fade-overlay" id="fadeOverlay"></div>
+
     <div class="container">
         <!-- 레이어 1: 배경 -->
         <img class="layer" src="assets/game/2_game_background.png" alt="배경" style="z-index:1;">
@@ -497,7 +461,7 @@
         </div>
 
         <!-- UI: 뒤로가기 -->
-        <button class="back-button" onclick="location.href='story.html';">&#8592;</button>
+        <button class="back-button" onclick="navigateTo('story.html');">&#8592;</button>
 
         <!-- UI: 진행 상태 -->
         <div class="progress-container">
@@ -539,7 +503,7 @@
             <span class="finish-emoji">🎉</span>
             <span class="finish-text">대단해! 다 맞혔어!</span>
             <span class="finish-sub">당근을 모두 모았어요</span>
-            <button class="restart-button" onclick="location.href='index.html';">다시 하기</button>
+            <button class="restart-button" onclick="navigateTo('index.html');">다시 하기</button>
         </div>
     </div>
 
@@ -550,6 +514,76 @@
         let firstWrongShown = false;
         let encourageMomInterval = null;
         const TOTAL_QUESTIONS = 10;
+
+        // 오디오 컨텍스트 (효과음용)
+        let audioContext = null;
+
+        // 효과음 초기화
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) {
+                console.log('Web Audio API not supported');
+            }
+        }
+
+        // 정답 효과음 (밝은 띵동 소리)
+        function playCorrectSound() {
+            if (!audioContext) return;
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+            osc.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+            osc.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
+            gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gain.gain.exponentialDecayTo && gain.gain.exponentialDecayTo(0.01, audioContext.currentTime + 0.4);
+            gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gain.gain.linearRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+            osc.start(audioContext.currentTime);
+            osc.stop(audioContext.currentTime + 0.4);
+        }
+
+        // 오답 효과음 (낮은 뿡 소리)
+        function playWrongSound() {
+            if (!audioContext) return;
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(200, audioContext.currentTime);
+            osc.frequency.linearRampToValueAtTime(150, audioContext.currentTime + 0.2);
+            gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gain.gain.linearRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            osc.start(audioContext.currentTime);
+            osc.stop(audioContext.currentTime + 0.3);
+        }
+
+        // 다음 페이지 이미지 프리로딩
+        function preloadImages() {
+            const images = [
+                'assets/complete/LOW_NEW_KITCHEN_BACKGROUND.png',
+                'assets/complete/LOW_complete_baby_rabbit_1.png',
+                'assets/complete/LOW_complete_baby_rabbit_2.png',
+                'assets/complete/low_NEW_complete_mom_with_cake_1.png',
+                'assets/complete/low_NEW_complete_mom_with_cake_2.png'
+            ];
+            images.forEach(src => {
+                const img = new Image();
+                img.src = src;
+            });
+        }
+
+        // 페이드 전환 후 이동
+        function navigateTo(url) {
+            const overlay = document.getElementById('fadeOverlay');
+            overlay.classList.add('active');
+            setTimeout(() => {
+                location.href = url;
+            }, 300);
+        }
 
         function shuffleArray(array) {
             return [...array].sort(() => Math.random() - 0.5);
@@ -625,6 +659,14 @@
             const emoji = document.getElementById('resultEmoji');
             emoji.textContent = isCorrect ? '\u2B55' : '\u274C';
             overlay.classList.add('show');
+
+            // 효과음 재생
+            if (isCorrect) {
+                playCorrectSound();
+            } else {
+                playWrongSound();
+            }
+
             setTimeout(() => overlay.classList.remove('show'), 800);
         }
 
@@ -722,7 +764,7 @@
                 setTimeout(() => {
                     correctCount++;
                     if (correctCount >= TOTAL_QUESTIONS) {
-                        location.href = 'complete.html';
+                        navigateTo('complete.html');
                     } else {
                         currentQuestion = generateQuestion();
                         selectedBasket = null;
@@ -753,9 +795,21 @@
         }
 
         window.addEventListener('load', () => {
+            // 오디오 및 이미지 프리로딩 초기화
+            initAudio();
+            preloadImages();
+
             currentQuestion = generateQuestion();
             updateUI();
         });
+
+        // 첫 터치/클릭 시 오디오 컨텍스트 활성화 (모바일 대응)
+        document.addEventListener('click', function initAudioOnClick() {
+            if (audioContext && audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            document.removeEventListener('click', initAudioOnClick);
+        }, { once: true });
     </script>
 </body>
 </html>

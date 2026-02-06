@@ -67,13 +67,13 @@
             color: #3D2817;
         }
 
-        /* 아기 토끼 */
+        /* 아기 토끼 - MB 기본 */
         .baby-rabbit {
             position: absolute;
-            right: 40%;
-            bottom: -10%;
-            width: 70%;
-            height: 70%;
+            right: 48%;
+            bottom: -6%;
+            width: 55%;
+            height: 55%;
             z-index: 10;
         }
 
@@ -87,15 +87,15 @@
             object-position: center bottom;
         }
 
-        /* 아기토끼 frame2 위치 보정 (1.1% 오른쪽, 1.0% 아래 밀림 보정) */
+        /* 아기토끼 frame2 위치 보정 */
         #babyFrame1 {
             transform: translateX(-1.1%) translateY(-1.0%);
         }
 
-        /* 엄마 토끼 */
+        /* 엄마 토끼 - MB 기본 */
         .mom-rabbit {
             position: absolute;
-            right: -20%;
+            right: -12%;
             bottom: -3%;
             width: 80%;
             height: 80%;
@@ -112,15 +112,15 @@
             object-position: center bottom;
         }
 
-        /* 엄마토끼 frame2 위치 보정 (1.2% 왼쪽 밀림 보정) */
+        /* 엄마토끼 frame2 위치 보정 */
         #momFrame1 {
             transform: translateX(1.2%);
         }
 
-        /* 대화 텍스트 - 말풍선 정중앙 (bubble: top9% ~ bottom35%, left10.5% ~ right89.5%) */
+        /* 대화 텍스트 - MB 기본 */
         .text-container {
             position: absolute;
-            top: 11%;
+            top: 15%;
             bottom: 67%;
             left: 13%;
             right: 13%;
@@ -141,13 +141,14 @@
         }
 
         .dialogue-text {
-            font-size: clamp(14px, min(4.5vw, 2.8vh), 22px);
+            font-size: clamp(22px, 6vw, 28px);
             font-weight: 900;
             color: #3D2817;
             text-align: center;
             line-height: 1.5;
             padding: 0 10px;
             white-space: pre-line;
+            word-break: keep-all;
         }
 
         .dialogue-text.single-line {
@@ -158,6 +159,24 @@
             color: #df7122;
         }
 
+        /* 페이지 전환 효과 */
+        .fade-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #FFF8F0;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+        }
+
+        .fade-overlay.active {
+            opacity: 1;
+        }
+
         /* PC 대응 */
         @media (min-width: 769px) {
             .container {
@@ -165,87 +184,52 @@
                 margin: 0 auto;
             }
 
+            .text-container {
+                top: 8%;
+            }
+
+            .dialogue-text {
+                font-size: clamp(14px, 4vw, 20px);
+                white-space: pre-line;
+            }
+
             .baby-rabbit {
                 right: 50%;
-                bottom: -11%;
+                bottom: -12%;
                 width: 55%;
                 height: 55%;
             }
 
             .mom-rabbit {
                 right: -5%;
-                bottom: -5%;
-                width: 70%;
-                height: 70%;
-            }
-        }
-
-        /* 큰 모바일 */
-        @media (min-height: 800px) {
-            .dialogue-text {
-                font-size: 24px;
-            }
-        }
-
-        /* 세로로 긴 화면 (20:9 등) */
-        @media (max-aspect-ratio: 9/18) {
-            .text-container {
-                top: 8%;
-                bottom: 72%;
-            }
-            .dialogue-text {
-                font-size: clamp(12px, min(4vw, 2.2vh), 18px);
-            }
-            .baby-rabbit {
-                right: 45%;
-                bottom: 0%;
-                width: 55%;
-                height: 55%;
-            }
-            .mom-rabbit {
-                right: -15%;
-                bottom: 2%;
-                width: 65%;
-                height: 65%;
-            }
-            .back-button {
-                top: calc(40px + env(safe-area-inset-top));
-            }
-        }
-
-        /* 짧은 화면 (태블릿 등) */
-        @media (min-aspect-ratio: 3/4) {
-            .text-container {
-                top: 12%;
-                bottom: 62%;
-            }
-            .baby-rabbit {
-                bottom: -15%;
-            }
-            .mom-rabbit {
                 bottom: -8%;
+                width: 75%;
+                height: 75%;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container" id="storyContainer">
-        <img class="background" src="assets/intro/NEW_kitchen_background.png" alt="부엌 배경">
+    <!-- 페이지 전환 오버레이 -->
+    <div class="fade-overlay" id="fadeOverlay"></div>
 
-        <button class="back-button" id="backBtn" onclick="event.stopPropagation(); location.href='index.html';">
+    <div class="container" id="storyContainer">
+        <img class="background" src="assets/intro/LOW_NEW_KITCHEN_BACKGROUND.png" alt="부엌 배경">
+
+        <button class="back-button" id="backBtn" onclick="event.stopPropagation(); navigateTo('index.html');">
             &#8592;
         </button>
 
         <!-- 아기 토끼 -->
         <div class="baby-rabbit">
-            <img id="babyFrame0" src="assets/intro/NEW_baby_rabbit_1.png" alt="아기토끼1" style="opacity:1;">
-            <img id="babyFrame1" src="assets/intro/NEW_baby_rabbit_2.png" alt="아기토끼2" style="opacity:0;">
+            <img id="babyFrame0" src="assets/intro/LOW_ baby_rabbit_1.png" alt="아기토끼1" style="opacity:1;">
+            <img id="babyFrame1" src="assets/intro/LOW_baby_rabbit_2.png" alt="아기토끼2" style="opacity:0;">
         </div>
 
         <!-- 엄마 토끼 -->
         <div class="mom-rabbit">
-            <img id="momFrame0" src="assets/intro/NEW_intro_mom_rabbit_talking_1.png" alt="엄마토끼1" style="opacity:1;">
-            <img id="momFrame1" src="assets/intro/NEW_intro_mom_rabbit_talking_2.png" alt="엄마토끼2" style="opacity:0;">
+            <img id="momFrame0" src="assets/intro/LOW_NEW_intro_mom_rabbit_talking_1.png" alt="엄마토끼1" style="opacity:1;">
+            <img id="momFrame1" src="assets/intro/LOW_NEW_intro_mom_rabbit_talking_2 (2).png" alt="엄마토끼2" style="opacity:0;">
         </div>
 
         <!-- 대화 텍스트 -->
@@ -265,6 +249,30 @@
         let momFrame = 0;
         let babyInterval = null;
         let momInterval = null;
+
+        // 다음 페이지 이미지 프리로딩
+        function preloadImages() {
+            const images = [
+                'assets/game/2_game_background.png',
+                'assets/game/2_game_carrot_basket_empty.png',
+                'assets/game/2_game_baby_rabbit_curious.png',
+                'assets/game/2_game_baby_rabbit_happy.png',
+                'assets/game/2_game_baby_rabbit_sad.png'
+            ];
+            images.forEach(src => {
+                const img = new Image();
+                img.src = src;
+            });
+        }
+
+        // 페이드 전환 후 이동
+        function navigateTo(url) {
+            const overlay = document.getElementById('fadeOverlay');
+            overlay.classList.add('active');
+            setTimeout(() => {
+                location.href = url;
+            }, 300);
+        }
 
         // 아기 토끼 애니메이션 (즉시 전환, 잔상 없음)
         function startBabyAnimation() {
@@ -312,6 +320,9 @@
 
         // 초기화
         window.addEventListener('load', () => {
+            // 이미지 프리로딩
+            preloadImages();
+
             startBabyAnimation();
             startMomAnimation();
 
@@ -333,7 +344,7 @@
             if (dialogueStep >= 0) {
                 if (babyInterval) clearInterval(babyInterval);
                 if (momInterval) clearInterval(momInterval);
-                location.href = 'game.html';
+                navigateTo('game.html');
             }
         });
     </script>
