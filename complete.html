@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>당근 수학 게임 - 완료</title>
+    <style>
+        @font-face {
+            font-family: 'Cafe24Ssurround';
+            src: url('assets/fonts/Cafe24Ssurround-v2.0.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Cafe24Ssurround', system-ui, sans-serif;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100dvh;
+            background-color: #FFF8F0;
+            overflow: hidden;
+        }
+
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 아기 토끼 */
+        .baby-rabbit {
+            position: absolute;
+            left: -5%;
+            bottom: 3%;
+            width: 45%;
+            height: 45%;
+            z-index: 10;
+        }
+
+        .baby-rabbit img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center bottom;
+            opacity: 0;
+        }
+
+        .baby-rabbit img.active {
+            opacity: 1;
+        }
+
+        /* 엄마 토끼 */
+        .mom-rabbit {
+            position: absolute;
+            right: -8%;
+            bottom: 3%;
+            width: 70%;
+            height: 70%;
+            z-index: 10;
+        }
+
+        .mom-rabbit img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center bottom;
+            opacity: 0;
+        }
+
+        .mom-rabbit img.active {
+            opacity: 1;
+        }
+
+        /* 대화 텍스트 - 말풍선 중앙 */
+        .text-container {
+            position: absolute;
+            top: 11%;
+            bottom: 67%;
+            left: 13%;
+            right: 13%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            z-index: 20;
+        }
+
+        .complete-text {
+            font-size: clamp(24px, 6.5vw, 32px);
+            font-weight: 900;
+            color: #FF6B35;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .complete-sub {
+            font-size: clamp(18px, 5vw, 24px);
+            font-weight: 900;
+            color: #3D2817;
+            text-align: center;
+        }
+
+        /* 축하 효과 */
+        .confetti {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+            overflow: hidden;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            opacity: 0;
+            animation: confettiFall 3s ease-out infinite;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                opacity: 1;
+                transform: translateY(-20px) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(100vh) rotate(720deg);
+            }
+        }
+
+        /* 힌트 텍스트 */
+        .hint-container {
+            position: absolute;
+            bottom: 4%;
+            left: 0;
+            right: 0;
+            text-align: center;
+            opacity: 0;
+            z-index: 50;
+        }
+
+        .hint-container.visible {
+            animation: hintPulse 1.6s ease-in-out infinite;
+        }
+
+        .hint-text {
+            font-size: 18px;
+            color: rgba(61, 40, 23, 0.85);
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);
+        }
+
+        @keyframes hintPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* PC 대응 */
+        @media (min-width: 769px) {
+            .container {
+                max-width: 480px;
+                margin: 0 auto;
+            }
+        }
+
+        /* 큰 모바일 */
+        @media (min-height: 800px) {
+            .complete-text {
+                font-size: 28px;
+            }
+            .complete-sub {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="completeContainer" style="cursor: pointer;">
+        <img class="background" src="assets/complete/complete_background_with_text_box_2.png" alt="배경">
+
+        <!-- 축하 효과 -->
+        <div class="confetti" id="confetti"></div>
+
+        <!-- 아기 토끼 -->
+        <div class="baby-rabbit">
+            <img id="babyFrame0" class="active" src="assets/complete/complete_baby_rabbit_1.png" alt="아기토끼1">
+            <img id="babyFrame1" src="assets/complete/complete_baby_rabbit_2.png" alt="아기토끼2">
+        </div>
+
+        <!-- 엄마 토끼 -->
+        <div class="mom-rabbit">
+            <img id="momFrame0" class="active" src="assets/complete/complete_mom_with_cake.png" alt="엄마토끼1">
+            <img id="momFrame1" src="assets/complete/complete_mom_with_cake_2.png" alt="엄마토끼2">
+        </div>
+
+        <!-- 완료 텍스트 -->
+        <div class="text-container">
+            <span class="complete-text">대단해 !</span>
+            <span class="complete-sub">당근 케이크가 완성 되었어 !</span>
+        </div>
+
+        <!-- 힌트 텍스트 -->
+        <div class="hint-container" id="hintContainer">
+            <span class="hint-text">터치 하기</span>
+        </div>
+    </div>
+
+    <script>
+        let babyFrame = 0;
+        let momFrame = 0;
+
+        // 아기 토끼 애니메이션 (즉시 전환)
+        function startBabyAnimation() {
+            const f0 = document.getElementById('babyFrame0');
+            const f1 = document.getElementById('babyFrame1');
+            setInterval(() => {
+                babyFrame = babyFrame === 0 ? 1 : 0;
+                f0.classList.toggle('active', babyFrame === 0);
+                f1.classList.toggle('active', babyFrame === 1);
+            }, 700);
+        }
+
+        // 엄마 토끼 애니메이션 (즉시 전환)
+        function startMomAnimation() {
+            const f0 = document.getElementById('momFrame0');
+            const f1 = document.getElementById('momFrame1');
+            setInterval(() => {
+                momFrame = momFrame === 0 ? 1 : 0;
+                f0.classList.toggle('active', momFrame === 0);
+                f1.classList.toggle('active', momFrame === 1);
+            }, 800);
+        }
+
+        // 축하 효과 생성
+        function createConfetti() {
+            const confettiContainer = document.getElementById('confetti');
+            const colors = ['#FF6B35', '#FFD93D', '#6BCB77', '#4D96FF', '#FF6B6B'];
+
+            for (let i = 0; i < 30; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = Math.random() * 100 + '%';
+                piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.animationDelay = Math.random() * 3 + 's';
+                piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                confettiContainer.appendChild(piece);
+            }
+        }
+
+        // 초기화
+        window.addEventListener('load', () => {
+            startBabyAnimation();
+            startMomAnimation();
+            createConfetti();
+
+            // 3초 후 힌트 텍스트 표시
+            setTimeout(() => {
+                document.getElementById('hintContainer').classList.add('visible');
+            }, 3000);
+        });
+
+        // 탭/클릭 시 엔딩으로 이동
+        document.getElementById('completeContainer').addEventListener('click', () => {
+            location.href = 'ending.html';
+        });
+    </script>
+</body>
+</html>

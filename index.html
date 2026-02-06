@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>당근 수학 게임</title>
+    <style>
+        @font-face {
+            font-family: 'Cafe24Ssurround';
+            src: url('assets/fonts/Cafe24Ssurround-v2.0.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Cafe24Ssurround', system-ui, sans-serif;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100dvh;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .rabbit-container {
+            position: absolute;
+            left: -5%;
+            bottom: -2%;
+            width: 105%;
+            height: 95%;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.5s cubic-bezier(0.33, 1, 0.68, 1),
+                        transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .rabbit-container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .rabbit-frame {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: left bottom;
+            opacity: 0;
+        }
+
+        .rabbit-frame.active {
+            opacity: 1;
+        }
+
+        .hint-container {
+            position: absolute;
+            bottom: 4%;
+            left: 0;
+            right: 0;
+            text-align: center;
+            opacity: 0;
+        }
+
+        .hint-container.visible {
+            animation: hintPulse 1.6s ease-in-out infinite;
+        }
+
+        .hint-text {
+            font-size: 18px;
+            color: rgba(61, 40, 23, 0.85);
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);
+        }
+
+        @keyframes hintPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* PC 대응 */
+        @media (min-width: 769px) {
+            .container {
+                max-width: 480px;
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="splash">
+        <img class="background" src="assets/splash/background.png" alt="배경">
+
+        <div class="rabbit-container" id="rabbitContainer">
+            <img class="rabbit-frame active" id="frame0" src="assets/splash/rabbit-frame-1.png" alt="토끼1">
+            <img class="rabbit-frame" id="frame1" src="assets/splash/rabbit-frame-2.png" alt="토끼2">
+            <img class="rabbit-frame" id="frame2" src="assets/splash/rabbit-frame-3.png" alt="토끼3">
+        </div>
+
+        <div class="hint-container" id="hintContainer">
+            <span class="hint-text">탭해서 시작</span>
+        </div>
+    </div>
+
+    <script>
+        const FRAMES = 3;
+        const FRAME_INTERVAL_MS = 600;
+        let currentFrame = 0;
+        let animationInterval = null;
+
+        // 토끼 프레임 애니메이션
+        function startFrameAnimation() {
+            animationInterval = setInterval(() => {
+                document.getElementById('frame' + currentFrame).classList.remove('active');
+                currentFrame = (currentFrame + 1) % FRAMES;
+                document.getElementById('frame' + currentFrame).classList.add('active');
+            }, FRAME_INTERVAL_MS);
+        }
+
+        // 초기화
+        window.addEventListener('load', () => {
+            const rabbitContainer = document.getElementById('rabbitContainer');
+            const hintContainer = document.getElementById('hintContainer');
+
+            // 토끼 등장 애니메이션
+            setTimeout(() => {
+                rabbitContainer.classList.add('visible');
+            }, 100);
+
+            // 프레임 애니메이션 시작
+            startFrameAnimation();
+
+            // 2초 후 힌트 텍스트 표시
+            setTimeout(() => {
+                hintContainer.classList.add('visible');
+            }, 2000);
+        });
+
+        // 탭/클릭 시 다음 화면으로
+        document.getElementById('splash').addEventListener('click', () => {
+            if (animationInterval) {
+                clearInterval(animationInterval);
+            }
+            location.href = 'story.html';
+        });
+    </script>
+</body>
+</html>

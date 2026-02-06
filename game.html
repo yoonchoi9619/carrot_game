@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>당근 수학 게임 - 게임</title>
+    <style>
+        @font-face {
+            font-family: 'Cafe24Ssurround';
+            src: url('assets/fonts/Cafe24Ssurround-v2.0.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Cafe24Ssurround', system-ui, sans-serif;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100dvh;
+            background-color: #FFF8F0;
+            overflow: hidden;
+        }
+
+        /* 모든 이미지 레이어 동일한 cover 방식으로 정렬 */
+        .layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center center;
+            pointer-events: none;
+        }
+
+        /* 뒤로가기 버튼 */
+        .back-button {
+            position: absolute;
+            top: 50px;
+            right: 20px;
+            width: 44px;
+            height: 44px;
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.85);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 100;
+            font-size: 22px;
+            color: #3D2817;
+        }
+
+        /* 진행 상태 */
+        .progress-container {
+            position: absolute;
+            top: 50px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 8px 14px;
+            min-width: 70px;
+            text-align: center;
+            z-index: 100;
+        }
+
+        .progress-text {
+            font-size: 20px;
+            font-weight: 900;
+            color: #3D2817;
+        }
+
+        /* 바구니 + 숫자 전체 클릭 영역 */
+        .basket-button {
+            position: absolute;
+            top: 14%;
+            width: 40%;
+            height: 34%;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 2%;
+            background: none;
+            border: none;
+            cursor: pointer;
+            pointer-events: auto;
+            transform: translateX(-50%);
+            z-index: 40;
+            transition: opacity 0.2s;
+        }
+
+        #basketBtn1 {
+            left: 25%;
+        }
+
+        #basketBtn2 {
+            left: 75%;
+        }
+
+        .basket-button:active {
+            transform: translateX(-50%) scale(0.95);
+        }
+
+        .basket-button.selected {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .basket-button.disabled {
+            pointer-events: none;
+        }
+
+        .basket-number {
+            font-size: clamp(42px, 13vw, 60px);
+            font-weight: 900;
+            color: #3D2817;
+            text-shadow: 0 2px 4px rgba(255,255,255,0.5);
+            user-select: none;
+        }
+
+        /* 수학 문제 - 바구니 아래, 빛나는 영역 */
+        .question-container {
+            position: absolute;
+            top: 48%;
+            left: 5%;
+            right: 5%;
+            text-align: center;
+            z-index: 50;
+        }
+
+        .question-text {
+            font-size: clamp(42px, 13vw, 60px);
+            font-weight: 900;
+            color: #FF6B35;
+            text-shadow: 0 2px 6px rgba(255,255,255,0.6);
+        }
+
+        /* 토끼 감정 이미지 */
+        .rabbit-layer {
+            position: absolute;
+            bottom: 3%;
+            left: 0%;
+            width: 85%;
+            height: 68%;
+            pointer-events: none;
+            z-index: 30;
+        }
+
+        .rabbit-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: left center;
+            opacity: 0;
+        }
+
+        .rabbit-img.active {
+            opacity: 1;
+        }
+
+        /* 정답/오답 이펙트 */
+        .result-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            pointer-events: none;
+        }
+
+        .result-overlay.show {
+            display: flex;
+        }
+
+        .result-emoji {
+            font-size: 120px;
+            animation: resultPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes resultPop {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* 첫 오답 격려 요소들 (같은 화면에서 표시) */
+        .encourage-text {
+            position: absolute;
+            top: 22%;
+            left: 5%;
+            right: 5%;
+            text-align: center;
+            z-index: 60;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            pointer-events: none;
+        }
+
+        .encourage-text.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .encourage-line {
+            display: block;
+            font-size: clamp(28px, 8vw, 38px);
+            font-weight: 900;
+            color: #FF6B35;
+            text-shadow: 0 2px 4px rgba(255,255,255,0.8);
+            margin-bottom: 12px;
+        }
+
+        .encourage-line:nth-child(2) {
+            margin-bottom: 20px;
+        }
+
+        .encourage-mom {
+            position: absolute;
+            right: -20%;
+            bottom: -5%;
+            width: 80%;
+            height: 70%;
+            z-index: 35;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+
+        .encourage-mom.show {
+            opacity: 1;
+        }
+
+        .encourage-mom img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center bottom;
+            opacity: 0;
+        }
+
+        .encourage-mom img.active {
+            opacity: 1;
+        }
+
+        /* 엄마토끼 frame2 위치 보정 (입만 움직이도록) */
+        #encourageMomFrame1 {
+            transform: translateX(1.2%);
+        }
+
+        /* 숨김 처리용 */
+        .game-element {
+            transition: opacity 0.3s ease;
+        }
+
+        .game-element.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* 다시 도전 버튼 */
+        .retry-button {
+            position: absolute;
+            bottom: 8%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 14px 32px;
+            background: #FF6B35;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 20px;
+            font-weight: 900;
+            font-family: 'Cafe24Ssurround', system-ui, sans-serif;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.1s;
+        }
+
+        .retry-button.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .retry-button:active {
+            transform: translateX(-50%) scale(0.95);
+        }
+
+        /* 완료 화면 */
+        .finish-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 248, 240, 0.95);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 300;
+            gap: 20px;
+        }
+
+        .finish-overlay.show {
+            display: flex;
+        }
+
+        .finish-emoji {
+            font-size: 80px;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        .finish-text {
+            font-size: 32px;
+            font-weight: 900;
+            color: #FF6B35;
+            text-align: center;
+        }
+
+        .finish-sub {
+            font-size: 18px;
+            color: #3D2817;
+            margin-top: 8px;
+        }
+
+        .restart-button {
+            margin-top: 20px;
+            padding: 16px 40px;
+            background: #FF6B35;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 22px;
+            font-weight: 900;
+            font-family: 'Cafe24Ssurround', system-ui, sans-serif;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+            transition: transform 0.1s;
+        }
+
+        .restart-button:active {
+            transform: scale(0.95);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* PC 대응 */
+        @media (min-width: 769px) {
+            .container {
+                max-width: 480px;
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 레이어 1: 배경 -->
+        <img class="layer" src="assets/game/2_game_background.png" alt="배경" style="z-index:1;">
+
+        <!-- 레이어 2: 당근 바구니 (약간 아래로 이동) -->
+        <img class="layer game-element" id="basketLayer" src="assets/game/2_game_carrot_basket_empty.png" alt="바구니" style="z-index:2; transform: translateY(5%);">
+
+        <!-- 레이어 3: 토끼 캐릭터 (감정별) -->
+        <div class="rabbit-layer">
+            <img class="rabbit-img active" id="rabbitCurious" src="assets/game/2_game_baby_rabbit_curious.png" alt="궁금한 토끼">
+            <img class="rabbit-img" id="rabbitHappy" src="assets/game/2_game_baby_rabbit_happy.png" alt="행복한 토끼">
+            <img class="rabbit-img" id="rabbitSad" src="assets/game/2_game_baby_rabbit_sad.png" alt="슬픈 토끼">
+        </div>
+
+        <!-- UI: 뒤로가기 -->
+        <button class="back-button" onclick="location.href='story.html';">&#8592;</button>
+
+        <!-- UI: 진행 상태 -->
+        <div class="progress-container">
+            <span class="progress-text" id="progressText">1 / 5</span>
+        </div>
+
+        <!-- UI: 바구니 위 숫자 선택 (각 바구니 중앙 위) -->
+        <button class="basket-button game-element" id="basketBtn1" onclick="handleBasketPress(0)">
+            <span class="basket-number" id="basketNum1"></span>
+        </button>
+        <button class="basket-button game-element" id="basketBtn2" onclick="handleBasketPress(1)">
+            <span class="basket-number" id="basketNum2"></span>
+        </button>
+
+        <!-- UI: 수학 문제 -->
+        <div class="question-container game-element" id="questionContainer">
+            <span class="question-text" id="questionText"></span>
+        </div>
+
+        <!-- 정답/오답 이펙트 -->
+        <div class="result-overlay" id="resultOverlay">
+            <span class="result-emoji" id="resultEmoji"></span>
+        </div>
+
+        <!-- 첫 오답 격려 요소들 -->
+        <div class="encourage-text" id="encourageText">
+            <span class="encourage-line">틀려도 괜찮아,</span>
+            <span class="encourage-line">엄마는 기다릴게 !</span>
+            <span class="encourage-line">다시 한번 생각해보자 !</span>
+        </div>
+        <div class="encourage-mom" id="encourageMom">
+            <img id="encourageMomFrame0" class="active" src="assets/game/1_intro_mom_rabbit_talking_1.png" alt="엄마토끼1">
+            <img id="encourageMomFrame1" src="assets/game/1_intro_mom_rabbit_talking_2.png" alt="엄마토끼2">
+        </div>
+        <button class="retry-button" id="retryButton" onclick="handleRetry()">네, 다시 도전!</button>
+
+        <!-- 완료 화면 -->
+        <div class="finish-overlay" id="finishOverlay">
+            <span class="finish-emoji">🎉</span>
+            <span class="finish-text">대단해! 다 맞혔어!</span>
+            <span class="finish-sub">당근을 모두 모았어요</span>
+            <button class="restart-button" onclick="location.href='index.html';">다시 하기</button>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestion = null;
+        let selectedBasket = null;
+        let correctCount = 0;
+        let firstWrongShown = false;
+        let encourageMomInterval = null;
+        const TOTAL_QUESTIONS = 10;
+
+        function shuffleArray(array) {
+            return [...array].sort(() => Math.random() - 0.5);
+        }
+
+        function generateBaskets(answer) {
+            const offset = Math.floor(Math.random() * 3) + 1;
+            const wrongAnswer = Math.random() > 0.5
+                ? Math.max(0, answer + offset)
+                : Math.max(0, answer - offset);
+            return shuffleArray([answer, wrongAnswer]);
+        }
+
+        function generateQuestion() {
+            const type = Math.floor(Math.random() * 3);
+
+            if (type === 0) {
+                const ones = Math.floor(Math.random() * 10);
+                const tens = [10, 20, 30][Math.floor(Math.random() * 3)];
+                const operation = Math.random() > 0.5 ? '+' : '-';
+                let answer, a, b;
+                if (operation === '+') {
+                    a = ones; b = tens; answer = ones + tens;
+                } else {
+                    answer = Math.floor(Math.random() * 10);
+                    a = answer + tens; b = tens;
+                }
+                return { text: a + ' ' + operation + ' ' + b + ' = ?', answer: answer, baskets: generateBaskets(answer) };
+            }
+
+            if (type === 1) {
+                const tens1 = [10, 20, 30, 40][Math.floor(Math.random() * 4)];
+                const tens2 = [10, 20][Math.floor(Math.random() * 2)];
+                const operation = Math.random() > 0.5 ? '+' : '-';
+                let answer, a, b;
+                if (operation === '+') {
+                    a = tens1; b = tens2; answer = tens1 + tens2;
+                } else {
+                    a = Math.max(tens1, tens2); b = Math.min(tens1, tens2); answer = a - b;
+                }
+                return { text: a + ' ' + operation + ' ' + b + ' = ?', answer: answer, baskets: generateBaskets(answer) };
+            }
+
+            const isMultiply = Math.random() > 0.5;
+            if (isMultiply) {
+                const a = Math.floor(Math.random() * 3) + 1;
+                const b = Math.floor(Math.random() * 3) + 1;
+                const answer = a * b;
+                return { text: a + ' \u00D7 ' + b + ' = ?', answer: answer, baskets: generateBaskets(answer) };
+            } else {
+                const divisors = [2, 3];
+                const divisor = divisors[Math.floor(Math.random() * divisors.length)];
+                const answer = Math.floor(Math.random() * 3) + 1;
+                const a = answer * divisor;
+                return { text: a + ' \u00F7 ' + divisor + ' = ?', answer: answer, baskets: generateBaskets(answer) };
+            }
+        }
+
+        function setRabbitEmotion(emotion) {
+            document.getElementById('rabbitCurious').classList.toggle('active', emotion === 'curious');
+            document.getElementById('rabbitHappy').classList.toggle('active', emotion === 'happy');
+            document.getElementById('rabbitSad').classList.toggle('active', emotion === 'sad');
+        }
+
+        function showResult(isCorrect) {
+            const overlay = document.getElementById('resultOverlay');
+            const emoji = document.getElementById('resultEmoji');
+            emoji.textContent = isCorrect ? '\u2B55' : '\u274C';
+            overlay.classList.add('show');
+            setTimeout(() => overlay.classList.remove('show'), 800);
+        }
+
+        function showEncourageOverlay() {
+            const btn1 = document.getElementById('basketBtn1');
+            const btn2 = document.getElementById('basketBtn2');
+            const questionContainer = document.getElementById('questionContainer');
+            const basketLayer = document.getElementById('basketLayer');
+            const encourageText = document.getElementById('encourageText');
+            const encourageMom = document.getElementById('encourageMom');
+            const retryButton = document.getElementById('retryButton');
+
+            // 게임 요소 숨기기
+            btn1.classList.add('hidden');
+            btn2.classList.add('hidden');
+            questionContainer.classList.add('hidden');
+            basketLayer.classList.add('hidden');
+
+            // 격려 요소 보이기
+            encourageText.classList.add('show');
+            encourageMom.classList.add('show');
+
+            // 2초 후 버튼 보이기
+            setTimeout(() => {
+                retryButton.classList.add('show');
+            }, 2000);
+
+            // 엄마토끼 말하기 애니메이션
+            let momFrame = 0;
+            const f0 = document.getElementById('encourageMomFrame0');
+            const f1 = document.getElementById('encourageMomFrame1');
+            encourageMomInterval = setInterval(() => {
+                momFrame = momFrame === 0 ? 1 : 0;
+                f0.classList.toggle('active', momFrame === 0);
+                f1.classList.toggle('active', momFrame === 1);
+            }, 400);
+        }
+
+        function handleRetry() {
+            const btn1 = document.getElementById('basketBtn1');
+            const btn2 = document.getElementById('basketBtn2');
+            const questionContainer = document.getElementById('questionContainer');
+            const basketLayer = document.getElementById('basketLayer');
+            const encourageText = document.getElementById('encourageText');
+            const encourageMom = document.getElementById('encourageMom');
+            const retryButton = document.getElementById('retryButton');
+
+            // 애니메이션 중지
+            if (encourageMomInterval) {
+                clearInterval(encourageMomInterval);
+                encourageMomInterval = null;
+            }
+
+            // 격려 요소 숨기기
+            encourageText.classList.remove('show');
+            encourageMom.classList.remove('show');
+            retryButton.classList.remove('show');
+
+            // 게임 요소 다시 보이기
+            btn1.classList.remove('hidden', 'selected', 'disabled');
+            btn2.classList.remove('hidden', 'selected', 'disabled');
+            questionContainer.classList.remove('hidden');
+            basketLayer.classList.remove('hidden');
+
+            selectedBasket = null;
+            setRabbitEmotion('curious');
+        }
+
+        function updateUI() {
+            document.getElementById('questionText').textContent = currentQuestion.text;
+            document.getElementById('basketNum1').textContent = currentQuestion.baskets[0];
+            document.getElementById('basketNum2').textContent = currentQuestion.baskets[1];
+            document.getElementById('progressText').textContent = (correctCount + 1) + ' / ' + TOTAL_QUESTIONS;
+            const btn1 = document.getElementById('basketBtn1');
+            const btn2 = document.getElementById('basketBtn2');
+            btn1.classList.remove('selected', 'disabled');
+            btn2.classList.remove('selected', 'disabled');
+        }
+
+        function handleBasketPress(index) {
+            if (selectedBasket !== null) return;
+            const basketValue = currentQuestion.baskets[index];
+            selectedBasket = basketValue;
+
+            const btn1 = document.getElementById('basketBtn1');
+            const btn2 = document.getElementById('basketBtn2');
+            btn1.classList.add('disabled');
+            btn2.classList.add('disabled');
+            if (index === 0) btn1.classList.add('selected');
+            else btn2.classList.add('selected');
+
+            if (basketValue === currentQuestion.answer) {
+                setRabbitEmotion('happy');
+                showResult(true);
+                setTimeout(() => {
+                    correctCount++;
+                    if (correctCount >= TOTAL_QUESTIONS) {
+                        location.href = 'complete.html';
+                    } else {
+                        currentQuestion = generateQuestion();
+                        selectedBasket = null;
+                        setRabbitEmotion('curious');
+                        updateUI();
+                    }
+                }, 1500);
+            } else {
+                setRabbitEmotion('sad');
+                showResult(false);
+
+                if (!firstWrongShown) {
+                    // 첫 오답: 격려 화면 표시
+                    firstWrongShown = true;
+                    setTimeout(() => {
+                        showEncourageOverlay();
+                    }, 800);
+                } else {
+                    // 이후 오답: 기존 동작
+                    setTimeout(() => {
+                        setRabbitEmotion('curious');
+                        selectedBasket = null;
+                        btn1.classList.remove('selected', 'disabled');
+                        btn2.classList.remove('selected', 'disabled');
+                    }, 1000);
+                }
+            }
+        }
+
+        window.addEventListener('load', () => {
+            currentQuestion = generateQuestion();
+            updateUI();
+        });
+    </script>
+</body>
+</html>
