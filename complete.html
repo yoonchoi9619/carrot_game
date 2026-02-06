@@ -30,8 +30,11 @@
             position: relative;
             width: 100%;
             height: 100dvh;
+            height: 100vh; /* fallback */
             background-color: #FFF8F0;
             overflow: hidden;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
         }
 
         .background {
@@ -109,7 +112,7 @@
         }
 
         .complete-text {
-            font-size: clamp(28px, 7.5vw, 38px);
+            font-size: clamp(22px, min(7vw, 4.5vh), 38px);
             font-weight: 900;
             color: #FF6B35;
             text-align: center;
@@ -117,7 +120,7 @@
         }
 
         .complete-sub {
-            font-size: clamp(22px, 6vw, 30px);
+            font-size: clamp(18px, min(5.5vw, 3.5vh), 30px);
             font-weight: 900;
             color: #3D2817;
             text-align: center;
@@ -168,7 +171,7 @@
         }
 
         .hint-text {
-            font-size: 18px;
+            font-size: clamp(14px, min(4.5vw, 2.5vh), 18px);
             color: rgba(61, 40, 23, 0.85);
             text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);
         }
@@ -220,6 +223,49 @@
             }
             .complete-sub {
                 font-size: 20px;
+            }
+        }
+
+        /* 세로로 긴 화면 (20:9 등) */
+        @media (max-aspect-ratio: 9/18) {
+            .text-container {
+                top: 8%;
+                bottom: 72%;
+            }
+            .complete-text {
+                font-size: clamp(18px, min(5.5vw, 3vh), 28px);
+            }
+            .complete-sub {
+                font-size: clamp(14px, min(4.5vw, 2.5vh), 22px);
+            }
+            .baby-rabbit {
+                right: 45%;
+                bottom: 0%;
+                width: 55%;
+                height: 55%;
+            }
+            .mom-rabbit {
+                right: -15%;
+                bottom: 0%;
+                width: 75%;
+                height: 75%;
+            }
+            .hint-container {
+                bottom: 6%;
+            }
+        }
+
+        /* 짧은 화면 (태블릿 등) */
+        @media (min-aspect-ratio: 3/4) {
+            .text-container {
+                top: 12%;
+                bottom: 62%;
+            }
+            .baby-rabbit {
+                bottom: -15%;
+            }
+            .mom-rabbit {
+                bottom: -15%;
             }
         }
     </style>

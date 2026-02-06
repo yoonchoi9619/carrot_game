@@ -30,9 +30,12 @@
             position: relative;
             width: 100%;
             height: 100dvh;
+            height: 100vh; /* fallback */
             background-color: #FFF8F0;
             cursor: pointer;
             overflow: hidden;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
         }
 
         .background {
@@ -138,7 +141,7 @@
         }
 
         .dialogue-text {
-            font-size: clamp(16px, 4.8vw, 22px);
+            font-size: clamp(14px, min(4.5vw, 2.8vh), 22px);
             font-weight: 900;
             color: #3D2817;
             text-align: center;
@@ -181,6 +184,46 @@
         @media (min-height: 800px) {
             .dialogue-text {
                 font-size: 24px;
+            }
+        }
+
+        /* 세로로 긴 화면 (20:9 등) */
+        @media (max-aspect-ratio: 9/18) {
+            .text-container {
+                top: 8%;
+                bottom: 72%;
+            }
+            .dialogue-text {
+                font-size: clamp(12px, min(4vw, 2.2vh), 18px);
+            }
+            .baby-rabbit {
+                right: 45%;
+                bottom: 0%;
+                width: 55%;
+                height: 55%;
+            }
+            .mom-rabbit {
+                right: -15%;
+                bottom: 2%;
+                width: 65%;
+                height: 65%;
+            }
+            .back-button {
+                top: calc(40px + env(safe-area-inset-top));
+            }
+        }
+
+        /* 짧은 화면 (태블릿 등) */
+        @media (min-aspect-ratio: 3/4) {
+            .text-container {
+                top: 12%;
+                bottom: 62%;
+            }
+            .baby-rabbit {
+                bottom: -15%;
+            }
+            .mom-rabbit {
+                bottom: -8%;
             }
         }
     </style>

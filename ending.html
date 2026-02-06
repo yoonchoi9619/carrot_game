@@ -30,9 +30,12 @@
             position: relative;
             width: 100%;
             height: 100dvh;
+            height: 100vh; /* fallback */
             background-color: #FFF8F0;
             overflow: hidden;
             cursor: pointer;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
         }
 
         .background {
@@ -86,7 +89,7 @@
         }
 
         .dialogue-text {
-            font-size: clamp(24px, 6.5vw, 32px);
+            font-size: clamp(18px, min(6vw, 3.8vh), 32px);
             font-weight: 900;
             color: #3D2817;
             text-align: center;
@@ -146,6 +149,39 @@
 
             .dialogue-text {
                 font-size: 26px;
+            }
+        }
+
+        /* 세로로 긴 화면 (20:9 등) */
+        @media (max-aspect-ratio: 9/18) {
+            .text-container {
+                top: 8%;
+                bottom: 72%;
+            }
+            .dialogue-text {
+                font-size: clamp(16px, min(5vw, 2.8vh), 24px);
+            }
+            .rabbits {
+                left: 55%;
+                bottom: -5%;
+                width: 95%;
+                height: 75%;
+            }
+            .restart-button {
+                bottom: 10%;
+                font-size: 16px;
+                padding: 12px 28px;
+            }
+        }
+
+        /* 짧은 화면 (태블릿 등) */
+        @media (min-aspect-ratio: 3/4) {
+            .text-container {
+                top: 12%;
+                bottom: 62%;
+            }
+            .rabbits {
+                bottom: -18%;
             }
         }
     </style>

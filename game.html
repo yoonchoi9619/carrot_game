@@ -30,8 +30,11 @@
             position: relative;
             width: 100%;
             height: 100dvh;
+            height: 100vh; /* fallback */
             background-color: #FFF8F0;
             overflow: hidden;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
         }
 
         /* 모든 이미지 레이어 동일한 cover 방식으로 정렬 */
@@ -130,7 +133,7 @@
         }
 
         .basket-number {
-            font-size: clamp(42px, 13vw, 60px);
+            font-size: clamp(32px, min(11vw, 7vh), 60px);
             font-weight: 900;
             color: #3D2817;
             text-shadow: 0 2px 4px rgba(255,255,255,0.5);
@@ -148,7 +151,7 @@
         }
 
         .question-text {
-            font-size: clamp(42px, 13vw, 60px);
+            font-size: clamp(32px, min(11vw, 7vh), 60px);
             font-weight: 900;
             color: #FF6B35;
             text-shadow: 0 2px 6px rgba(255,255,255,0.6);
@@ -229,7 +232,7 @@
 
         .encourage-line {
             display: block;
-            font-size: clamp(28px, 8vw, 38px);
+            font-size: clamp(20px, min(7vw, 4.5vh), 38px);
             font-weight: 900;
             color: #FF6B35;
             text-shadow: 0 2px 4px rgba(255,255,255,0.8);
@@ -417,6 +420,63 @@
                 bottom: -5%;
                 width: 75%;
                 height: 65%;
+            }
+        }
+
+        /* 세로로 긴 화면 (20:9 등) */
+        @media (max-aspect-ratio: 9/18) {
+            .progress-container {
+                top: calc(40px + env(safe-area-inset-top));
+            }
+            .back-button {
+                top: calc(40px + env(safe-area-inset-top));
+            }
+            .basket-button {
+                top: 12%;
+                height: 28%;
+            }
+            .basket-number {
+                font-size: clamp(28px, min(9vw, 5vh), 48px);
+            }
+            .question-container {
+                top: 42%;
+            }
+            .question-text {
+                font-size: clamp(28px, min(9vw, 5vh), 48px);
+            }
+            .rabbit-layer {
+                bottom: 5%;
+                height: 55%;
+            }
+            .encourage-text {
+                top: 18%;
+            }
+            .encourage-line {
+                font-size: clamp(18px, min(6vw, 3.5vh), 30px);
+            }
+            .encourage-mom {
+                bottom: 0%;
+                height: 55%;
+            }
+            .retry-button {
+                bottom: 10%;
+                font-size: 16px;
+                padding: 12px 28px;
+            }
+        }
+
+        /* 짧은 화면 (태블릿 등) */
+        @media (min-aspect-ratio: 3/4) {
+            .basket-button {
+                top: 16%;
+                height: 38%;
+            }
+            .question-container {
+                top: 52%;
+            }
+            .rabbit-layer {
+                bottom: -5%;
+                height: 75%;
             }
         }
     </style>
