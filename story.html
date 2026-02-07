@@ -117,22 +117,60 @@
             transform: translateX(1.2%);
         }
 
-        /* 대화 텍스트 - MB 기본 */
-        .text-container {
+        /* 말풍선 컨테이너 */
+        .speech-bubble {
             position: absolute;
-            top: 15%;
-            bottom: 67%;
-            left: 13%;
-            right: 13%;
+            top: 12%;
+            left: 8%;
+            right: 8%;
+            min-height: 18%;
+            background: #FDF6E3;
+            border: 3px solid #C4A574;
+            border-radius: 20px;
+            z-index: 20;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 20px 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* 말풍선 따옴표 장식 - 오른쪽 위 */
+        .speech-bubble::before {
+            content: '"';
+            position: absolute;
+            top: -5px;
+            right: 15px;
+            font-size: 40px;
+            font-family: Georgia, serif;
+            color: #8B7355;
+            line-height: 1;
+        }
+
+        /* 말풍선 따옴표 장식 - 왼쪽 아래 */
+        .speech-bubble::after {
+            content: '"';
+            position: absolute;
+            bottom: -15px;
+            left: 15px;
+            font-size: 40px;
+            font-family: Georgia, serif;
+            color: #8B7355;
+            line-height: 1;
+            transform: rotate(180deg);
+        }
+
+        /* 대화 텍스트 - MB 기본 */
+        .text-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
             opacity: 0;
             transform: scale(0.9);
             transition: opacity 0.4s cubic-bezier(0.33, 1, 0.68, 1),
                         transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             pointer-events: none;
-            z-index: 20;
         }
 
         .text-container.visible {
@@ -141,7 +179,7 @@
         }
 
         .dialogue-text {
-            font-size: clamp(22px, 6vw, 28px);
+            font-size: clamp(20px, 5.5vw, 26px);
             font-weight: 900;
             color: #3D2817;
             text-align: center;
@@ -184,8 +222,9 @@
                 margin: 0 auto;
             }
 
-            .text-container {
+            .speech-bubble {
                 top: 8%;
+                min-height: 15%;
             }
 
             .dialogue-text {
@@ -232,9 +271,11 @@
             <img id="momFrame1" src="assets/intro/LOW_NEW_intro_mom_rabbit_talking_2 (2).png" alt="엄마토끼2" style="opacity:0;">
         </div>
 
-        <!-- 대화 텍스트 -->
-        <div class="text-container" id="textContainer">
-            <span class="dialogue-text" id="dialogueText"></span>
+        <!-- 말풍선 + 대화 텍스트 -->
+        <div class="speech-bubble">
+            <div class="text-container" id="textContainer">
+                <span class="dialogue-text" id="dialogueText"></span>
+            </div>
         </div>
     </div>
 

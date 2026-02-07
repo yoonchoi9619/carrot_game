@@ -96,34 +96,74 @@
             opacity: 1;
         }
 
+        /* 말풍선 컨테이너 */
+        .speech-bubble {
+            position: absolute;
+            top: 12%;
+            left: 8%;
+            right: 8%;
+            min-height: 18%;
+            background: #FDF6E3;
+            border: 3px solid #C4A574;
+            border-radius: 20px;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* 말풍선 따옴표 장식 - 오른쪽 위 */
+        .speech-bubble::before {
+            content: '"';
+            position: absolute;
+            top: -5px;
+            right: 15px;
+            font-size: 40px;
+            font-family: Georgia, serif;
+            color: #8B7355;
+            line-height: 1;
+        }
+
+        /* 말풍선 따옴표 장식 - 왼쪽 아래 */
+        .speech-bubble::after {
+            content: '"';
+            position: absolute;
+            bottom: -15px;
+            left: 15px;
+            font-size: 40px;
+            font-family: Georgia, serif;
+            color: #8B7355;
+            line-height: 1;
+            transform: rotate(180deg);
+        }
+
         /* 대화 텍스트 - MB 기본 */
         .text-container {
-            position: absolute;
-            top: 13%;
-            bottom: 67%;
-            left: 13%;
-            right: 13%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            z-index: 20;
+            width: 100%;
         }
 
         .complete-text {
-            font-size: clamp(26px, 8vw, 42px);
+            font-size: clamp(24px, 7vw, 36px);
             font-weight: 900;
             color: #FF6B35;
             text-align: center;
             line-height: 1.4;
+            white-space: nowrap;
         }
 
         .complete-sub {
-            font-size: clamp(20px, 6vw, 32px);
+            font-size: clamp(18px, 5vw, 28px);
             font-weight: 900;
             color: #3D2817;
             text-align: center;
+            white-space: nowrap;
         }
 
         /* 축하 효과 */
@@ -206,17 +246,17 @@
                 margin: 0 auto;
             }
 
-            .text-container {
-                top: 5%;
+            .speech-bubble {
+                top: 8%;
+                min-height: 15%;
             }
 
             .complete-text {
-                font-size: 32px;
+                font-size: 28px;
             }
 
             .complete-sub {
-                font-size: 24px;
-                white-space: nowrap;
+                font-size: 20px;
             }
 
             .baby-rabbit {
@@ -257,10 +297,12 @@
             <img id="momFrame1" src="assets/complete/low_NEW_complete_mom_with_cake_2.png" alt="엄마토끼2">
         </div>
 
-        <!-- 완료 텍스트 -->
-        <div class="text-container">
-            <span class="complete-text">대단해 !</span>
-            <span class="complete-sub">당근 케이크가 완성 되었어 !</span>
+        <!-- 말풍선 + 완료 텍스트 -->
+        <div class="speech-bubble">
+            <div class="text-container">
+                <span class="complete-text">대단해!</span>
+                <span class="complete-sub">당근 케이크가 완성됐어!</span>
+            </div>
         </div>
 
         <!-- 힌트 텍스트 -->
