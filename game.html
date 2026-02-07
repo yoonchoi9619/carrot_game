@@ -509,6 +509,10 @@
         let encourageMomInterval = null;
         const TOTAL_QUESTIONS = 5;
 
+        // URL에서 레벨 파라미터 가져오기
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentLevel = parseInt(urlParams.get('level')) || 2;
+
         // 오디오 컨텍스트 (효과음용)
         let audioContext = null;
 
@@ -597,7 +601,25 @@
             return shuffleArray([answer, wrongAnswer]);
         }
 
-        function generateQuestion() {
+        // 레벨 1: 쉬움 - 덧셈/뺄셈만 (1~10 범위)
+        function generateQuestionLevel1() {
+            const operation = Math.random() > 0.5 ? '+' : '-';
+            let a, b, answer;
+
+            if (operation === '+') {
+                a = Math.floor(Math.random() * 9) + 1; // 1-9
+                b = Math.floor(Math.random() * 9) + 1; // 1-9
+                answer = a + b;
+            } else {
+                answer = Math.floor(Math.random() * 9) + 1; // 1-9
+                b = Math.floor(Math.random() * 9) + 1; // 1-9
+                a = answer + b;
+            }
+            return { text: a + ' ' + operation + ' ' + b + ' = ?', answer: answer, baskets: generateBaskets(answer) };
+        }
+
+        // 레벨 2: 보통 - 현재 난이도 (덧셈/뺄셈/곱셈/나눗셈)
+        function generateQuestionLevel2() {
             const type = Math.floor(Math.random() * 3);
 
             if (type === 0) {
@@ -640,6 +662,49 @@
                 const a = answer * divisor;
                 return { text: a + ' \u00F7 ' + divisor + ' = ?', answer: answer, baskets: generateBaskets(answer) };
             }
+        }
+
+        // 레벨 3: 어려움 - 더 큰 수, 두 자리 연산
+        function generateQuestionLevel3() {
+            const type = Math.floor(Math.random() * 4);
+
+            if (type === 0) {
+                // 두 자리 + 두 자리
+                const a = Math.floor(Math.random() * 40) + 10; // 10-49
+                const b = Math.floor(Math.random() * 40) + 10; // 10-49
+                const answer = a + b;
+                return { text: a + ' + ' + b + ' = ?', answer: answer, baskets: generateBaskets(answer) };
+            }
+
+            if (type === 1) {
+                // 두 자리 - 두 자리
+                const answer = Math.floor(Math.random() * 30) + 10; // 10-39
+                const b = Math.floor(Math.random() * 30) + 10; // 10-39
+                const a = answer + b;
+                return { text: a + ' - ' + b + ' = ?', answer: answer, baskets: generateBaskets(answer) };
+            }
+
+            if (type === 2) {
+                // 곱셈 (구구단 범위 확장)
+                const a = Math.floor(Math.random() * 5) + 2; // 2-6
+                const b = Math.floor(Math.random() * 5) + 2; // 2-6
+                const answer = a * b;
+                return { text: a + ' \u00D7 ' + b + ' = ?', answer: answer, baskets: generateBaskets(answer) };
+            }
+
+            // 나눗셈 (더 큰 수)
+            const divisors = [2, 3, 4, 5];
+            const divisor = divisors[Math.floor(Math.random() * divisors.length)];
+            const answer = Math.floor(Math.random() * 8) + 2; // 2-9
+            const a = answer * divisor;
+            return { text: a + ' \u00F7 ' + divisor + ' = ?', answer: answer, baskets: generateBaskets(answer) };
+        }
+
+        // 레벨에 따라 문제 생성
+        function generateQuestion() {
+            if (currentLevel === 1) return generateQuestionLevel1();
+            if (currentLevel === 3) return generateQuestionLevel3();
+            return generateQuestionLevel2();
         }
 
         function setRabbitEmotion(emotion) {

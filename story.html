@@ -197,6 +197,57 @@
             color: #df7122;
         }
 
+        /* 레벨 선택 버튼 컨테이너 */
+        .level-container {
+            position: absolute;
+            top: 34%;
+            left: 10%;
+            right: 10%;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            z-index: 25;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            pointer-events: none;
+        }
+
+        .level-container.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .level-btn {
+            padding: 12px 16px;
+            border: 3px solid #C4A574;
+            border-radius: 15px;
+            background: #FDF6E3;
+            font-family: 'Cafe24Ssurround', system-ui, sans-serif;
+            font-size: clamp(14px, 4vw, 18px);
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .level-btn:active {
+            transform: scale(0.95);
+        }
+
+        .level-btn.lv1 {
+            color: #4CAF50;
+        }
+
+        .level-btn.lv2 {
+            color: #FF9800;
+        }
+
+        .level-btn.lv3 {
+            color: #F44336;
+        }
+
         /* 페이지 전환 효과 */
         .fade-overlay {
             position: fixed;
@@ -230,6 +281,14 @@
             .dialogue-text {
                 font-size: clamp(14px, 4vw, 20px);
                 white-space: pre-line;
+            }
+
+            .level-container {
+                top: 28%;
+            }
+
+            .level-btn {
+                font-size: 16px;
             }
 
             .baby-rabbit {
@@ -276,6 +335,13 @@
             <div class="text-container" id="textContainer">
                 <span class="dialogue-text" id="dialogueText"></span>
             </div>
+        </div>
+
+        <!-- 레벨 선택 버튼 -->
+        <div class="level-container" id="levelContainer">
+            <button class="level-btn lv1" onclick="selectLevel(1)">Lv.1<br>쉬움</button>
+            <button class="level-btn lv2" onclick="selectLevel(2)">Lv.2<br>보통</button>
+            <button class="level-btn lv3" onclick="selectLevel(3)">Lv.3<br>어려움</button>
         </div>
     </div>
 
@@ -359,6 +425,18 @@
             }, 100);
         }
 
+        // 레벨 선택
+        function selectLevel(level) {
+            if (babyInterval) clearInterval(babyInterval);
+            if (momInterval) clearInterval(momInterval);
+            navigateTo('game.html?level=' + level);
+        }
+
+        // 레벨 버튼 표시
+        function showLevelButtons() {
+            document.getElementById('levelContainer').classList.add('visible');
+        }
+
         // 초기화
         window.addEventListener('load', () => {
             // 이미지 프리로딩
@@ -372,21 +450,22 @@
                 showDialogue(0);
             }, 800);
 
-            // 3.8초 후 두 번째 대화
+            // 3.8초 후 두 번째 대화 + 레벨 버튼
             setTimeout(() => {
                 showDialogue(1);
+                // 대화 후 1초 뒤 레벨 버튼 표시
+                setTimeout(() => {
+                    showLevelButtons();
+                }, 1000);
             }, 3800);
         });
 
-        // 탭/클릭으로 게임 화면으로
+        // 탭/클릭 - 레벨 버튼이나 뒤로가기 버튼 클릭 시 무시
         document.getElementById('storyContainer').addEventListener('click', (e) => {
             if (e.target.closest('.back-button')) return;
-
-            if (dialogueStep >= 0) {
-                if (babyInterval) clearInterval(babyInterval);
-                if (momInterval) clearInterval(momInterval);
-                navigateTo('game.html');
-            }
+            if (e.target.closest('.level-btn')) return;
+            if (e.target.closest('.level-container')) return;
+            // 레벨 버튼이 보이면 화면 탭으로 이동하지 않음
         });
     </script>
 </body>
